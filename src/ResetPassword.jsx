@@ -123,6 +123,7 @@ const ResetPassword = () => {
               <TextField
                 onChange={handleChange}
                 name="password"
+                type="password"
                 value={formData.password}
                 id="outlined-basic"
                 label=" Yeni Şifre"
@@ -134,6 +135,7 @@ const ResetPassword = () => {
               <TextField
                 onChange={handleChange}
                 name="confirmPassword"
+                type="password"
                 value={formData.confirmPassword}
                 id="outlined-basic"
                 label=" Yeni Şifre Tekrar"

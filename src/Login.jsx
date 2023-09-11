@@ -46,11 +46,9 @@ const Login = () => {
           password: formData.password,
         },
       }).then((res) => {
-        console.log(res);
         localStorage.setItem("token", res.data.login.token);
         localStorage.setItem("user", JSON.stringify(res.data.login.user));
         setUser(res.data.login.user);
-        setToken(localStorage.getItem("token"));
         setShowButton(false);
       });
     } catch (error) {
@@ -141,6 +139,7 @@ const Login = () => {
               <TextField
                 onChange={handleChange}
                 name="password"
+                type="password"
                 value={formData.password}
                 id="outlined-basic"
                 label="Şifre"

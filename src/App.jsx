@@ -13,8 +13,10 @@ function App() {
 
   useEffect(() => {
     const loggedinUser = localStorage.getItem("user");
-    console.log("logged in user", loggedinUser);
-  });
+    if (loggedinUser) {
+      setUser(JSON.parse(loggedinUser));
+    }
+  }, []);
 
   const handleLogout = () => {
     localStorage.removeItem("user");

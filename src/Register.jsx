@@ -156,6 +156,7 @@ const Register = () => {
               <TextField
                 onChange={handleChange}
                 name="password"
+                type="password"
                 value={formData.password}
                 id="outlined-basic"
                 label="Şifre"
