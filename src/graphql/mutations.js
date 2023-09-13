@@ -40,6 +40,93 @@ export const LOGIN = gql`
     }
   }
 `;
+
+export const POST_FRAGMENT = gql`
+  fragment PostDetails on Post {
+    content
+    comments_count
+    created_at
+    file
+    id
+    like_count
+    user {
+      id
+      name
+      username
+      profile_photo
+    }
+    likes {
+      id
+      user {
+        id
+        name
+        username
+        profile_photo
+      }
+    }
+    post_replies {
+      id
+      content
+      like_count
+      comments_count
+      original_reply_id
+      created_at
+      updated_at
+      user {
+        name
+        username
+        profile_photo
+        id
+      }
+    }
+    saves {
+      id
+      user {
+        id
+        name
+        username
+        profile_photo
+      }
+    }
+  }
+`;
+
+export const LIKE = gql`
+  mutation likePost($postId: Int!) {
+    likePost(postId: $postId) {
+      ...PostDetails
+    }
+  }
+  ${POST_FRAGMENT}
+`;
+
+export const UNLIKE = gql`
+  mutation unlikePost($postId: Int!) {
+    unlikePost(postId: $postId) {
+      ...PostDetails
+    }
+  }
+  ${POST_FRAGMENT}
+`;
+
+export const SAVE_POST = gql`
+  mutation savePost($postId: Int!) {
+    savePost(postId: $postId) {
+      ...PostDetails
+    }
+  }
+  ${POST_FRAGMENT}
+`;
+
+export const UNSAVE_POST = gql`
+  mutation unsavePost($postId: Int!) {
+    unsavePost(postId: $postId) {
+      ...PostDetails
+    }
+  }
+  ${POST_FRAGMENT}
+`;
+
 export const SEND_RESET_EMAIL = gql`
   mutation SendResetEmail($email: String!) {
     sendResetEmail(email: $email)

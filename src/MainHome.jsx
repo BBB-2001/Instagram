@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from "react";
 import Story from "./Story";
-
+import { LIKE, UNLIKE, SAVE_POST } from "./graphql/Mutations";
 import { POSTS } from "./graphql/queries";
-import { useQuery } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 import moment from "moment";
-import { AiOutlineHeart } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsChat } from "react-icons/bs";
 import { GoBookmark } from "react-icons/go";
 import { FiSend } from "react-icons/fi";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
+
 import {
   Avatar,
   Card,
@@ -20,18 +21,101 @@ import {
   linkClasses,
 } from "@mui/material";
 import { userContext } from "./App";
+import { cloneDeep } from "@apollo/client/utilities";
 
 const MainHome = () => {
   const { user } = useContext(userContext);
   const { loading, error, data } = useQuery(POSTS);
   const [posts, setPosts] = useState(data?.posts || []);
+  const [likes, setLikes] = useState([]);
+
+  const [like] = useMutation(LIKE);
+  const [unlike] = useMutation(UNLIKE);
+  const [savepost] = useMutation(SAVE_POST);
+
+  const handleLike = async (postId) => {
+    try {
+      const likedPost = await like({
+        variables: {
+          postId: postId,
+        },
+      });
+      // posts arrayinde postid bulup
+      const newPosts = posts.map((post) => {
+        if (post.id === postId) {
+          post = likedPost.data;
+        }
+        setPosts(newPosts);
+      });
+      setPosts(newPosts);
+    } catch (error) {
+      console.log("errrrror", error);
+    }
+  };
+
+  const handleUnlike = async (postId) => {
+    try {
+      const unlikedPost = await unlike({
+        variables: {
+          postId: postId,
+        },
+      });
+      // posts arrayinde postid bulup
+      const newPosts = posts.map((post) => {
+        if (post.id === postId) {
+          post = unlikedPost.data;
+        }
+        setPosts(newPosts);
+      });
+      setPosts(newPosts);
+    } catch (error) {
+      console.log("errrrror", error);
+    }
+  };
+
+  const handleSave = (postId) => {
+    try {
+      const savePost = savepost({
+        variables: {
+          postId: postId,
+        },
+      });
+      // posts arrayinde postid bulup
+      const newPosts = posts.map((post) => {
+        if (post.id === postId) {
+          post = savePost;
+        }
+      });
+      setPosts(newPosts);
+    } catch (error) {
+      console.log("errrrror", error);
+    }
+  };
 
   useEffect(() => {
     if (data?.posts) {
+      // const target = data.posts.map((item) =>
+      //   Object.assign({}, item, { selected: false })
+      // );
+      // let postData = target.map((post) => {
+      //   const userIds = post.likes.map((like) => like.user_id);
+      //   if (userIds.includes(user.id)) {
+      //     post.liked = true;
+      //   } else {
+      //     post.liked = false;
+      //   }
+      //   return post;
+      // });
+      // setPosts(postData);
       setPosts(data.posts);
-      console.log(data.posts);
+      setLikes(
+        data.posts.map((post) => {
+          return post.likes.find((like) => like.user_id === user.id);
+        })
+      );
     }
   }, [data]);
+
   function formatTimestamp(created_at) {
     const timestampInMilliseconds = parseInt(created_at, 10);
     const postDate = moment(timestampInMilliseconds);
@@ -58,7 +142,7 @@ const MainHome = () => {
           sx={{
             width: "470px",
             paddingBottom: "16px",
-            marginBottom: "24px",
+            marginBottom: "16px",
 
             borderBottom: "1px solid #bebebe",
           }}
@@ -102,7 +186,7 @@ const MainHome = () => {
               justifyContent: "center",
               alignItems: "center",
               width: "468px",
-              height: "585px",
+              height: "auto",
               backgroundColor: "#000",
             }}
           >
@@ -128,12 +212,36 @@ const MainHome = () => {
                 }}
               >
                 <Typography sx={{ float: "left" }}>
-                  <AiOutlineHeart size={30} style={{ paddingRight: "12px" }} />
-                  <BsChat size={28} style={{ paddingRight: "12px" }} />
-                  <FiSend size={28} />
+                  {likes[index] ? (
+                    <AiFillHeart
+                      onClick={() => handleUnlike(post.id)}
+                      size={30}
+                      style={{
+                        paddingRight: "12px",
+                        color: "red",
+                        cursor: "pointer",
+                      }}
+                    />
+                  ) : (
+                    <AiOutlineHeart
+                      onClick={() => handleLike(post.id)}
+                      size={30}
+                      style={{
+                        paddingRight: "12px",
+
+                        cursor: "pointer",
+                      }}
+                    />
+                  )}
+
+                  <BsChat
+                    size={28}
+                    style={{ paddingRight: "12px", cursor: "pointer" }}
+                  />
+                  <FiSend size={28} style={{ cursor: "pointer" }} />
                 </Typography>
                 <Typography sx={{ float: "right" }}>
-                  <GoBookmark size={30} />
+                  <GoBookmark size={30} style={{ cursor: "pointer" }} />
                 </Typography>
               </div>
               <div>
