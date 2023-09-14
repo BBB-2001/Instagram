@@ -25,6 +25,7 @@ export const POSTS = gql`
         }
       }
       saves {
+        post_id
         id
         user {
           id

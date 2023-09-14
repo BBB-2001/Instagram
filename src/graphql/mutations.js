@@ -80,6 +80,7 @@ export const POST_FRAGMENT = gql`
       }
     }
     saves {
+      post_id
       id
       user {
         id

@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import Story from "./Story";
-import { LIKE, UNLIKE, SAVE_POST } from "./graphql/Mutations";
+import { LIKE, UNLIKE, SAVE_POST, UNSAVE_POST } from "./graphql/Mutations";
 import { POSTS } from "./graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import moment from "moment";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsChat } from "react-icons/bs";
-import { GoBookmark } from "react-icons/go";
+import { GoBookmark, GoBookmarkFill } from "react-icons/go";
 import { FiSend } from "react-icons/fi";
 import { BiDotsHorizontalRounded } from "react-icons/bi";
 
@@ -32,6 +32,7 @@ const MainHome = () => {
   const [like] = useMutation(LIKE);
   const [unlike] = useMutation(UNLIKE);
   const [savepost] = useMutation(SAVE_POST);
+  const [unsavepost] = useMutation(UNSAVE_POST);
 
   const handleLike = async (postId) => {
     try {
@@ -45,7 +46,6 @@ const MainHome = () => {
         if (post.id === postId) {
           post = likedPost.data;
         }
-        setPosts(newPosts);
       });
       setPosts(newPosts);
     } catch (error) {
@@ -65,49 +65,35 @@ const MainHome = () => {
         if (post.id === postId) {
           post = unlikedPost.data;
         }
-        setPosts(newPosts);
       });
       setPosts(newPosts);
     } catch (error) {
       console.log("errrrror", error);
     }
+  };
+  const handleSave = async (postId) => {
+    const savePost = await savepost({
+      variables: {
+        postId: postId,
+      },
+    });
+
+    console.log("SAVEPOST", savePost);
   };
 
-  const handleSave = (postId) => {
-    try {
-      const savePost = savepost({
-        variables: {
-          postId: postId,
-        },
-      });
-      // posts arrayinde postid bulup
-      const newPosts = posts.map((post) => {
-        if (post.id === postId) {
-          post = savePost;
-        }
-      });
-      setPosts(newPosts);
-    } catch (error) {
-      console.log("errrrror", error);
-    }
+  const handleUnsave = async (postId) => {
+    const unsavePost = await unsavepost({
+      variables: {
+        postId: postId,
+      },
+    });
   };
+  console.log("POst", posts);
 
   useEffect(() => {
     if (data?.posts) {
-      // const target = data.posts.map((item) =>
-      //   Object.assign({}, item, { selected: false })
-      // );
-      // let postData = target.map((post) => {
-      //   const userIds = post.likes.map((like) => like.user_id);
-      //   if (userIds.includes(user.id)) {
-      //     post.liked = true;
-      //   } else {
-      //     post.liked = false;
-      //   }
-      //   return post;
-      // });
-      // setPosts(postData);
       setPosts(data.posts);
+      console.log(data);
       setLikes(
         data.posts.map((post) => {
           return post.likes.find((like) => like.user_id === user.id);
@@ -138,7 +124,7 @@ const MainHome = () => {
       {posts.map((post, index) => (
         <Card
           elevation={0}
-          key={post.id}
+          key={post?.id}
           sx={{
             width: "470px",
             paddingBottom: "16px",
@@ -151,7 +137,7 @@ const MainHome = () => {
             sx={{ padding: 0, paddingBottom: 0.5 }}
             avatar={
               <Avatar
-                src={post.user?.profile_photo}
+                src={post?.user?.profile_photo}
                 aria-label="user-avatar"
               ></Avatar>
             }
@@ -163,7 +149,7 @@ const MainHome = () => {
                 }}
               >
                 <span style={{ fontWeight: "bold", marginRight: "8px" }}>
-                  {post.user.name}
+                  {post?.user?.name}
                 </span>
                 <span
                   style={{
@@ -214,7 +200,7 @@ const MainHome = () => {
                 <Typography sx={{ float: "left" }}>
                   {likes[index] ? (
                     <AiFillHeart
-                      onClick={() => handleUnlike(post.id)}
+                      onClick={() => handleUnlike(post?.id)}
                       size={30}
                       style={{
                         paddingRight: "12px",
@@ -224,7 +210,7 @@ const MainHome = () => {
                     />
                   ) : (
                     <AiOutlineHeart
-                      onClick={() => handleLike(post.id)}
+                      onClick={() => handleLike(post?.id)}
                       size={30}
                       style={{
                         paddingRight: "12px",
@@ -241,7 +227,19 @@ const MainHome = () => {
                   <FiSend size={28} style={{ cursor: "pointer" }} />
                 </Typography>
                 <Typography sx={{ float: "right" }}>
-                  <GoBookmark size={30} style={{ cursor: "pointer" }} />
+                  {post.saves.find((save) => save.user.id === user.id) ? (
+                    <GoBookmarkFill
+                      onClick={() => handleUnsave(post?.id)}
+                      size={30}
+                      style={{ cursor: "pointer" }}
+                    />
+                  ) : (
+                    <GoBookmark
+                      onClick={() => handleSave(post?.id)}
+                      size={30}
+                      style={{ cursor: "pointer" }}
+                    />
+                  )}
                 </Typography>
               </div>
               <div>
@@ -249,7 +247,7 @@ const MainHome = () => {
                 <span></span>
               </div>
               <div>
-                {post.like_count > 0 ? (
+                {post?.like_count > 0 ? (
                   <div>
                     <Typography sx={{ fontStyle: "#000", fontWeight: "bold" }}>
                       {post?.like_count} beğenme
@@ -259,7 +257,7 @@ const MainHome = () => {
                   <div></div>
                 )}
 
-                {post.content !== "" ? (
+                {post?.content !== "" ? (
                   <div
                     style={{
                       display: "flex",
@@ -273,9 +271,9 @@ const MainHome = () => {
                         paddingRight: "5px",
                       }}
                     >
-                      {post.user.name}
+                      {post?.user?.name}
                     </Typography>
-                    <Typography>{post.content}</Typography>
+                    <Typography>{post?.content}</Typography>
                   </div>
                 ) : (
                   <div>
@@ -283,7 +281,7 @@ const MainHome = () => {
                   </div>
                 )}
 
-                <Typography>{post.comments_count} yorumu gör</Typography>
+                <Typography>{post?.comments_count} yorumu gör</Typography>
 
                 <Typography>Yorum ekle...</Typography>
               </div>
