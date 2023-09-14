@@ -43,6 +43,8 @@ export const LOGIN = gql`
 
 export const POST_FRAGMENT = gql`
   fragment PostDetails on Post {
+    is_liked
+    is_saved
     content
     comments_count
     created_at

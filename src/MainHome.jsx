@@ -41,13 +41,6 @@ const MainHome = () => {
           postId: postId,
         },
       });
-      // posts arrayinde postid bulup
-      const newPosts = posts.map((post) => {
-        if (post.id === postId) {
-          post = likedPost.data;
-        }
-      });
-      setPosts(newPosts);
     } catch (error) {
       console.log("errrrror", error);
     }
@@ -60,13 +53,6 @@ const MainHome = () => {
           postId: postId,
         },
       });
-      // posts arrayinde postid bulup
-      const newPosts = posts.map((post) => {
-        if (post.id === postId) {
-          post = unlikedPost.data;
-        }
-      });
-      setPosts(newPosts);
     } catch (error) {
       console.log("errrrror", error);
     }
@@ -90,18 +76,6 @@ const MainHome = () => {
   };
   console.log("POst", posts);
 
-  useEffect(() => {
-    if (data?.posts) {
-      setPosts(data.posts);
-      console.log(data);
-      setLikes(
-        data.posts.map((post) => {
-          return post.likes.find((like) => like.user_id === user.id);
-        })
-      );
-    }
-  }, [data]);
-
   function formatTimestamp(created_at) {
     const timestampInMilliseconds = parseInt(created_at, 10);
     const postDate = moment(timestampInMilliseconds);
@@ -121,7 +95,7 @@ const MainHome = () => {
   return (
     <div>
       <Story />
-      {posts.map((post, index) => (
+      {data?.posts.map((post, index) => (
         <Card
           elevation={0}
           key={post?.id}
@@ -198,7 +172,7 @@ const MainHome = () => {
                 }}
               >
                 <Typography sx={{ float: "left" }}>
-                  {likes[index] ? (
+                  {post?.is_liked ? (
                     <AiFillHeart
                       onClick={() => handleUnlike(post?.id)}
                       size={30}
@@ -227,7 +201,7 @@ const MainHome = () => {
                   <FiSend size={28} style={{ cursor: "pointer" }} />
                 </Typography>
                 <Typography sx={{ float: "right" }}>
-                  {post.saves.find((save) => save.user.id === user.id) ? (
+                  {post?.is_saved ? (
                     <GoBookmarkFill
                       onClick={() => handleUnsave(post?.id)}
                       size={30}

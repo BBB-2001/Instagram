@@ -2,6 +2,8 @@ import { gql } from "@apollo/client";
 export const POSTS = gql`
   query Posts {
     posts {
+      is_liked
+      is_saved
       id
       file
       content
