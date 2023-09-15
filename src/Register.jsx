@@ -47,7 +47,6 @@ const Register = () => {
           password: formData.password,
         },
       }).then((res) => {
-        console.log(res);
         localStorage.setItem("token", res.data.register.token);
         localStorage.setItem("user", res.data.register.user);
       });

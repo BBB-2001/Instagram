@@ -23,7 +23,11 @@ import {
   CardContent,
   CardHeader,
   IconButton,
+  Input,
+  InputLabel,
   Typography,
+  FormControl,
+  FormHelperText,
   linkClasses,
   TextField,
   Button,
@@ -36,8 +40,6 @@ const MainHome = () => {
   const { user } = useContext(userContext);
   const { loading, error, data } = useQuery(POSTS);
   const [posts, setPosts] = useState([]);
-  const [likes, setLikes] = useState([]);
-  const [comment, setComment] = useState("");
 
   const [like] = useMutation(LIKE);
   const [unlike] = useMutation(UNLIKE);
@@ -45,14 +47,13 @@ const MainHome = () => {
   const [unsavepost] = useMutation(UNSAVE_POST);
   const [createcomment] = useMutation(CREATE_COMMENT);
 
-  const handleCommentChange = (event) => {
-    setComment(event.target.value);
-  };
-
   const handleCommentSubmit = async (e, postId) => {
-    console.log("aasdasdasdasdasdas");
-
     e.preventDefault();
+
+    const formData = new FormData(e.target);
+    const comment = formData.get("comment");
+    console.log("comment", comment);
+
     try {
       await createcomment({
         variables: {
@@ -62,7 +63,6 @@ const MainHome = () => {
       });
       // post içerisine eklenecek
       // post count + 1
-      setComment("");
     } catch (error) {
       console.log("comment error", error);
     }
@@ -108,7 +108,6 @@ const MainHome = () => {
       },
     });
   };
-  console.log("POst", posts);
 
   useEffect(() => {
     if (data && data.posts) {
@@ -134,6 +133,26 @@ const MainHome = () => {
   }
 
   if (loading || error) return null;
+
+  const buttonStyle = {
+    "&:hover": {
+      backgroundColor: "transparent",
+      boxShadow: "none", // Box shadow'ı kaldırmak için
+      transition: "none",
+      color: "rgba(0, 0, 0, 0.4);", // Transition'ı kaldırmak için // Hover efektini devre dışı bırakmak için arka planı şeffaf yapabilirsiniz
+    },
+    border: "none", // Düğmenin kenarlığını kaldırmak için
+    width: "20%",
+    marginTop: "8px",
+    float: "right",
+    height: "20px",
+    backgroundColor: "transparent",
+    color: "#0095F6",
+    boxShadow: "none", // Box shadow'ı kaldırmak için
+    transition: "none", // Transition'ı kaldırmak için
+    fontWeight: "600",
+    fontSize: "13px",
+  };
 
   return (
     <div>
@@ -300,21 +319,46 @@ const MainHome = () => {
 
                 <Typography>{post?.comments_count} yorumu gör</Typography>
 
-                <TextField
+                <form onSubmit={(e) => handleCommentSubmit(e, post.id)}>
+                  <input
+                    placeholder="Yorum Gir..."
+                    style={{
+                      border: "none",
+                      marginTop: "8px",
+                      outline: "none",
+                    }}
+                    onChange={(e) => {
+                      if (e.target.value.trim() !== "") {
+                        // Giriş alanında yazı varsa "Paylaş" düğmesini göster
+                        document.getElementById("submit-button").style.display =
+                          "block";
+                      } else {
+                        // Giriş alanı boşsa "Paylaş" düğmesini gizle
+                        document.getElementById("submit-button").style.display =
+                          "none";
+                      }
+                    }}
+                  />
+
+                  <Button
+                    id="submit-button"
+                    style={{ display: "none" }}
+                    variant="contained"
+                    color="primary"
+                    type="submit"
+                    sx={buttonStyle}
+                  >
+                    Paylaş
+                  </Button>
+                </form>
+
+                {/* <TextField
                   fullWidth
-                  label="Yorum ekle..."
+                  label="comment"
                   multiline
                   rows={1}
-                  value={comment}
-                  onChange={handleCommentChange}
-                ></TextField>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={(e) => handleCommentSubmit(e, post.id)}
-                >
-                  Gönder
-                </Button>
+                  name="comment"
+                /> */}
               </div>
             </Typography>
           </CardContent>

@@ -41,7 +41,6 @@ const ResetPassword = () => {
           newPassword: formData.password,
         },
       }).then((res) => {
-        console.log(res);
         navigate("/auth/login");
       });
     } catch (error) {

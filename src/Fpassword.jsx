@@ -37,7 +37,6 @@ const Fpassword = () => {
           email: formData.email,
         },
       }).then((res) => {
-        console.log(res);
         navigate("/auth/login");
       });
     } catch (error) {
