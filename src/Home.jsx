@@ -7,7 +7,7 @@ import Suggested from "./Suggested";
 function Home() {
   return (
     <div>
-      <Sidebar />
+      {/* <Sidebar /> */}
       <Container sx={{ paddingTop: "22px" }}>
         <MainHome />
         <Suggested />

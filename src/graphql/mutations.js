@@ -140,3 +140,49 @@ export const RESET_PASSWORD = gql`
     resetPassword(token: $token, newPassword: $newPassword)
   }
 `;
+
+export const CREATE_COMMENT = gql`
+  mutation CreateComment($postId: Int!, $content: String!) {
+    createComment(postId: $postId, content: $content) {
+      content
+      created_at
+      id
+      like_count
+      original_reply_id
+      post_id
+      updated_at
+      user_id
+      user {
+        id
+        username
+        name
+      }
+      replies {
+        replies {
+          comments_count
+          content
+          created_at
+          id
+          like_count
+          post {
+            id
+            user_id
+          }
+          post_id
+          updated_at
+          user {
+            id
+            post_count
+            updated_at
+            username
+            created_at
+            email
+            followers_count
+            name
+          }
+          user_id
+        }
+      }
+    }
+  }
+`;

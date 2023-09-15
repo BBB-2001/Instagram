@@ -1,6 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import Story from "./Story";
-import { LIKE, UNLIKE, SAVE_POST, UNSAVE_POST } from "./graphql/Mutations";
+import {
+  LIKE,
+  UNLIKE,
+  SAVE_POST,
+  UNSAVE_POST,
+  CREATE_COMMENT,
+} from "./graphql/Mutations";
 import { POSTS } from "./graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
 import moment from "moment";
@@ -19,6 +25,9 @@ import {
   IconButton,
   Typography,
   linkClasses,
+  TextField,
+  Button,
+  Grid,
 } from "@mui/material";
 import { userContext } from "./App";
 import { cloneDeep } from "@apollo/client/utilities";
@@ -26,13 +35,38 @@ import { cloneDeep } from "@apollo/client/utilities";
 const MainHome = () => {
   const { user } = useContext(userContext);
   const { loading, error, data } = useQuery(POSTS);
-  const [posts, setPosts] = useState(data?.posts || []);
+  const [posts, setPosts] = useState([]);
   const [likes, setLikes] = useState([]);
+  const [comment, setComment] = useState("");
 
   const [like] = useMutation(LIKE);
   const [unlike] = useMutation(UNLIKE);
   const [savepost] = useMutation(SAVE_POST);
   const [unsavepost] = useMutation(UNSAVE_POST);
+  const [createcomment] = useMutation(CREATE_COMMENT);
+
+  const handleCommentChange = (event) => {
+    setComment(event.target.value);
+  };
+
+  const handleCommentSubmit = async (e, postId) => {
+    console.log("aasdasdasdasdasdas");
+
+    e.preventDefault();
+    try {
+      await createcomment({
+        variables: {
+          postId,
+          content: comment,
+        },
+      });
+      // post içerisine eklenecek
+      // post count + 1
+      setComment("");
+    } catch (error) {
+      console.log("comment error", error);
+    }
+  };
 
   const handleLike = async (postId) => {
     try {
@@ -76,6 +110,12 @@ const MainHome = () => {
   };
   console.log("POst", posts);
 
+  useEffect(() => {
+    if (data && data.posts) {
+      setPosts(data.posts);
+    }
+  }, [data]);
+
   function formatTimestamp(created_at) {
     const timestampInMilliseconds = parseInt(created_at, 10);
     const postDate = moment(timestampInMilliseconds);
@@ -92,17 +132,20 @@ const MainHome = () => {
       return postDate.format("MMMM Do YYYY");
     }
   }
+
+  if (loading || error) return null;
+
   return (
     <div>
       <Story />
-      {data?.posts.map((post, index) => (
+      {posts.map((post, index) => (
         <Card
           elevation={0}
           key={post?.id}
           sx={{
             width: "470px",
-            paddingBottom: "16px",
-            marginBottom: "16px",
+            paddingBottom: 0,
+            marginBottom: "24px",
 
             borderBottom: "1px solid #bebebe",
           }}
@@ -111,7 +154,7 @@ const MainHome = () => {
             sx={{ padding: 0, paddingBottom: 0.5 }}
             avatar={
               <Avatar
-                src={post?.user?.profile_photo}
+                src={post.user?.profile_photo}
                 aria-label="user-avatar"
               ></Avatar>
             }
@@ -123,7 +166,7 @@ const MainHome = () => {
                 }}
               >
                 <span style={{ fontWeight: "bold", marginRight: "8px" }}>
-                  {post?.user?.name}
+                  {post.user?.name}
                 </span>
                 <span
                   style={{
@@ -136,7 +179,7 @@ const MainHome = () => {
                 >
                   .
                 </span>
-                <span>{formatTimestamp(post?.created_at)}</span>
+                <span>{formatTimestamp(post.created_at)}</span>
               </div>
             }
           />
@@ -161,7 +204,7 @@ const MainHome = () => {
               alt={post?.id}
             />
           </div>
-          <CardContent sx={{ padding: 0, paddingTop: 2 }}>
+          <CardContent sx={{ padding: 0, paddingTop: 1 }}>
             <Typography variant="body2" color="text.secondary">
               <div
                 style={{
@@ -174,7 +217,7 @@ const MainHome = () => {
                 <Typography sx={{ float: "left" }}>
                   {post?.is_liked ? (
                     <AiFillHeart
-                      onClick={() => handleUnlike(post?.id)}
+                      onClick={() => handleUnlike(post.id)}
                       size={30}
                       style={{
                         paddingRight: "12px",
@@ -184,7 +227,7 @@ const MainHome = () => {
                     />
                   ) : (
                     <AiOutlineHeart
-                      onClick={() => handleLike(post?.id)}
+                      onClick={() => handleLike(post.id)}
                       size={30}
                       style={{
                         paddingRight: "12px",
@@ -257,7 +300,21 @@ const MainHome = () => {
 
                 <Typography>{post?.comments_count} yorumu gör</Typography>
 
-                <Typography>Yorum ekle...</Typography>
+                <TextField
+                  fullWidth
+                  label="Yorum ekle..."
+                  multiline
+                  rows={1}
+                  value={comment}
+                  onChange={handleCommentChange}
+                ></TextField>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={(e) => handleCommentSubmit(e, post.id)}
+                >
+                  Gönder
+                </Button>
               </div>
             </Typography>
           </CardContent>
