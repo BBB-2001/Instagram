@@ -4,7 +4,7 @@ import App from "./App.jsx";
 import React from "react";
 
 const client = new ApolloClient({
-  uri: "https://1935-159-146-95-80.ngrok-free.app/graphql",
+  uri: "https://f541-159-146-95-80.ngrok-free.app/graphql",
   cache: new InMemoryCache(),
   headers: {
     Authorization: localStorage.getItem("token")

@@ -8,8 +8,8 @@ import { RiMessengerLine } from "react-icons/ri";
 import { AiOutlineHeart } from "react-icons/ai";
 import { BsPersonCircle } from "react-icons/bs";
 import { LuPlusSquare } from "react-icons/lu";
-import { userContext } from "./App";
-import image from "./assets/insta3.png";
+import { userContext } from "../App";
+import image from "../assets/insta3.png";
 const Sidebar = () => {
   const { user } = useContext(userContext);
 

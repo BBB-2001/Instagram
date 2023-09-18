@@ -1,13 +1,14 @@
 import React from "react";
-import Sidebar from "./Sidebar";
+
 import { Container } from "@mui/material";
-import MainHome from "./MainHome";
-import Suggested from "./Suggested";
+import MainHome from "./components/MainHome";
+import Suggested from "./components/Suggested";
+import Sidebar from "./components/Sidebar";
 
 function Home() {
   return (
     <div>
-      {/* <Sidebar /> */}
+      <Sidebar />
       <Container sx={{ paddingTop: "22px" }}>
         <MainHome />
         <Suggested />
