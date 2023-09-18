@@ -6,7 +6,6 @@ import {
   SAVE_POST,
   UNSAVE_POST,
   CREATE_COMMENT,
-  GET_SINGLE_POST,
 } from "../graphql/Mutations";
 import { POSTS } from "../graphql/queries";
 import { useMutation, useQuery } from "@apollo/client";
@@ -15,24 +14,14 @@ import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsChat } from "react-icons/bs";
 import { GoBookmark, GoBookmarkFill } from "react-icons/go";
 import { FiSend } from "react-icons/fi";
-import { BiDotsHorizontalRounded } from "react-icons/bi";
 
 import {
   Avatar,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
-  IconButton,
-  Input,
-  InputLabel,
   Typography,
-  FormControl,
-  FormHelperText,
-  linkClasses,
-  TextField,
   Button,
-  Grid,
 } from "@mui/material";
 import { userContext } from "../App";
 import PostComponent from "./PostComponent";
@@ -47,14 +36,14 @@ const MainHome = () => {
   const [unlike] = useMutation(UNLIKE);
   const [savepost] = useMutation(SAVE_POST);
   const [unsavepost] = useMutation(UNSAVE_POST);
-  const [createcomment] = useMutation(CREATE_COMMENT);
+  const [createComment] = useMutation(CREATE_COMMENT);
 
-  const [isPostOpen, setIsPostOpen] = useState(false);
-  const [selectedPost, setSelectedPost] = useState(null);
-
-  const handleClosePost = () => {
-    setIsPostOpen(false);
+  const [open, setOpen] = React.useState(false);
+  const handleOpen = (postId) => {
+    setOpen(true);
+    setPostId(postId);
   };
+  const handleClose = () => setOpen(false);
 
   const handleCommentSubmit = async (e, postId) => {
     e.preventDefault();
@@ -64,7 +53,7 @@ const MainHome = () => {
     console.log("comment", comment);
 
     try {
-      await createcomment({
+      await createComment({
         variables: {
           postId: postId,
           content: comment,
@@ -168,13 +157,16 @@ const MainHome = () => {
     <>
       {postId != null && (
         <PostComponent
-          setPostId={setPostId}
+          open={open}
+          handleClose={handleClose}
+          postId={postId}
           post={posts.find((post) => post.id === postId)}
         />
       )}
 
       <div>
         <Story />
+
         {posts.map((post, index) => (
           <Card
             elevation={0}
@@ -277,7 +269,7 @@ const MainHome = () => {
                     <BsChat
                       size={28}
                       style={{ paddingRight: "12px", cursor: "pointer" }}
-                      onClick={() => setPostId(postId)}
+                      onClick={() => handleOpen(post.id)}
                     />
 
                     <FiSend size={28} style={{ cursor: "pointer" }} />
@@ -352,7 +344,7 @@ const MainHome = () => {
                       placeholder="Yorum Gir..."
                       style={{
                         border: "none",
-                        marginTop: "8px",
+
                         outline: "none",
                         width: "400px",
                       }}

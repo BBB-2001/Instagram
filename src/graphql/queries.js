@@ -59,3 +59,50 @@ export const POSTS = gql`
     }
   }
 `;
+
+export const GET_SINGLE_POST = gql`
+  query Query($postId: Int!) {
+    getSinglePost(postId: $postId) {
+      comments_count
+      content
+      created_at
+      file
+      id
+      is_liked
+      is_saved
+      like_count
+      likes {
+        user {
+          username
+          id
+        }
+        user_id
+      }
+      post_replies {
+        content
+        id
+        created_at
+        original_reply_id
+        user {
+          id
+          username
+        }
+        user_id
+      }
+      post_tagged {
+        id
+        user {
+          username
+          id
+        }
+      }
+      user {
+        username
+        id
+        name
+        profile_photo
+      }
+      user_id
+    }
+  }
+`;

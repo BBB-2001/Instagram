@@ -142,95 +142,10 @@ export const RESET_PASSWORD = gql`
 `;
 
 export const CREATE_COMMENT = gql`
-  mutation CreateComment($postId: Int!, $content: String!) {
+  mutation createComment($postId: Int!, $content: String!) {
     createComment(postId: $postId, content: $content) {
-      content
-      comments_count
-      created_at
-      id
-      like_count
-      original_reply_id
-      post_id
-      updated_at
-      user_id
-      user {
-        id
-        username
-        name
-      }
-      replies {
-        replies {
-          comments_count
-          content
-          created_at
-          id
-          like_count
-          post {
-            id
-            user_id
-          }
-          post_id
-          updated_at
-          user {
-            id
-            post_count
-            updated_at
-            username
-            created_at
-            email
-            followers_count
-            name
-          }
-          user_id
-        }
-      }
+      ...PostDetails
     }
   }
-`;
-
-export const GET_SINGLE_POST = gql`
-  mutation GetSinglePost($postId: Int!) {
-    getSinglePost(postId: $postId) {
-      comments_count
-      content
-      created_at
-      file
-      id
-      is_liked
-      is_saved
-      like_count
-      likes {
-        user {
-          username
-          id
-        }
-        user_id
-      }
-      post_replies {
-        content
-        id
-        created_at
-        original_reply_id
-        user {
-          id
-          username
-        }
-        user_id
-      }
-      post_tagged {
-        id
-        user {
-          username
-          id
-        }
-      }
-      user {
-        username
-        id
-        name
-        profile_photo
-      }
-      user_id
-    }
-  }
+  ${POST_FRAGMENT}
 `;
