@@ -13,6 +13,7 @@ import {
   CardHeader,
   Typography,
   Button,
+  Grid,
 } from "@mui/material";
 import { AiOutlineHeart, AiFillHeart } from "react-icons/ai";
 import { BsChat } from "react-icons/bs";
@@ -33,24 +34,6 @@ Backdrop.propTypes = {
   className: PropTypes.string.isRequired,
   open: PropTypes.bool,
 };
-const blue = {
-  200: "#99CCF3",
-  400: "#3399FF",
-  500: "#007FFF",
-};
-
-const grey = {
-  50: "#f6f8fa",
-  100: "#eaeef2",
-  200: "#d0d7de",
-  300: "#afb8c1",
-  400: "#8c959f",
-  500: "#6e7781",
-  600: "#57606a",
-  700: "#424a53",
-  800: "#32383f",
-  900: "#24292f",
-};
 
 const StyledModal = styled(Modal)`
   position: fixed;
@@ -70,13 +53,11 @@ const StyledBackdrop = styled(Backdrop)`
 `;
 
 const style = (theme) => ({
-  width: 400,
-  borderRadius: "12px",
-  padding: "16px 32px 24px 32px",
+  width: 1360,
+  height: 870,
+  borderRadius: "none",
+  padding: "none",
   backgroundColor: theme.palette.mode === "dark" ? "#0A1929" : "white",
-  boxShadow: `0px 2px 24px ${
-    theme.palette.mode === "dark" ? "#000" : "#383838"
-  }`,
 });
 
 function formatTimestamp(created_at) {
@@ -137,220 +118,218 @@ const PostComponent = ({ postId, handleClose, open }) => {
         slots={{ backdrop: StyledBackdrop }}
       >
         <Box sx={style}>
-          <Card
-            elevation={0}
-            key={post?.id}
-            sx={{
-              width: "470px",
-              paddingBottom: 0,
-              marginBottom: "24px",
-
-              borderBottom: "1px solid #bebebe",
-            }}
-          >
-            <CardHeader
-              sx={{ padding: 0, paddingBottom: 0.5 }}
-              avatar={
-                <Avatar
-                  src={post?.user?.profile_photo}
-                  aria-label="user-avatar"
-                ></Avatar>
-              }
-              title={
+          <Card elevation={0} key={post?.id}>
+            <Grid container>
+              <Grid item xs={6}>
                 <div
                   style={{
                     display: "flex",
+                    justifyContent: "center",
                     alignItems: "center",
+                    width: "auto",
+                    height: "auto",
+                    backgroundColor: "#000",
                   }}
                 >
-                  <span style={{ fontWeight: "bold", marginRight: "8px" }}>
-                    {post?.user?.name}
-                  </span>
-                  <span
+                  <img
                     style={{
-                      fontWeight: "bold",
-                      marginRight: "8px",
-                      alignItems: "center",
-
-                      display: "flex",
+                      width: "auto",
+                      height: "auto",
+                      maxWidth: "100%",
+                      maxHeight: "100%",
                     }}
-                  >
-                    .
-                  </span>
-                  <span>{formatTimestamp(post?.created_at)}</span>
+                    src={post?.file}
+                    alt="file"
+                  />
                 </div>
-              }
-            />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "468px",
-                height: "auto",
-                backgroundColor: "#000",
-              }}
-            >
-              <img
-                style={{
-                  width: "auto",
-                  height: "auto",
-                  maxWidth: "100%",
-                  maxHeight: "100%",
-                }}
-                src={post?.file}
-                alt="file"
-              />
-            </div>
-            <CardContent sx={{ padding: 0, paddingTop: 1 }}>
-              <Typography variant="body2" color="text.secondary">
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "row",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                  }}
-                >
-                  <Typography sx={{ float: "left" }}>
-                    {post?.is_liked ? (
-                      <AiFillHeart
-                        onClick={() => handleUnlike(post.id)}
-                        size={30}
+              </Grid>
+
+              <Grid item xs={6}>
+                <CardHeader
+                  sx={{ padding: 0, paddingBottom: 0.5 }}
+                  avatar={
+                    <Avatar
+                      src={post?.user?.profile_photo}
+                      aria-label="user-avatar"
+                    ></Avatar>
+                  }
+                  title={
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span style={{ fontWeight: "bold", marginRight: "8px" }}>
+                        {post?.user?.name}
+                      </span>
+                      <span
                         style={{
-                          paddingRight: "12px",
-                          color: "red",
-                          cursor: "pointer",
+                          fontWeight: "bold",
+                          marginRight: "8px",
+                          alignItems: "center",
+
+                          display: "flex",
                         }}
-                      />
-                    ) : (
-                      <AiOutlineHeart
-                        onClick={() => handleLike(post.id)}
-                        size={30}
-                        style={{
-                          paddingRight: "12px",
-
-                          cursor: "pointer",
-                        }}
-                      />
-                    )}
-
-                    <BsChat
-                      size={28}
-                      style={{ paddingRight: "12px", cursor: "pointer" }}
-                      onClick={() => handleOpen(post.id)}
-                    />
-
-                    <FiSend size={28} style={{ cursor: "pointer" }} />
-                  </Typography>
-                  <Typography sx={{ float: "right" }}>
-                    {post?.is_saved ? (
-                      <GoBookmarkFill
-                        onClick={() => handleUnsave(post?.id)}
-                        size={30}
-                        style={{ cursor: "pointer" }}
-                      />
-                    ) : (
-                      <GoBookmark
-                        onClick={() => handleSave(post?.id)}
-                        size={30}
-                        style={{ cursor: "pointer" }}
-                      />
-                    )}
-                  </Typography>
-                </div>
-                <div>
-                  <span></span>
-                  <span></span>
-                </div>
-                <div>
-                  {post?.like_count > 0 ? (
-                    <div>
-                      <Typography
-                        sx={{ fontStyle: "#000", fontWeight: "bold" }}
                       >
-                        {post?.like_count} beğenme
-                      </Typography>
+                        .
+                      </span>
+                      <span>{formatTimestamp(post?.created_at)}</span>
                     </div>
-                  ) : (
-                    <div></div>
-                  )}
+                  }
+                />
 
-                  {post?.content !== "" ? (
+                <CardContent sx={{ padding: 0, paddingTop: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
                     <div
                       style={{
                         display: "flex",
                         flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "space-between",
                       }}
                     >
-                      <Typography
-                        sx={{
-                          fontStyle: "#000",
-                          fontWeight: "bold",
-                          paddingRight: "5px",
-                        }}
-                      >
-                        {post?.user?.name}
+                      <Typography sx={{ float: "left" }}>
+                        {post?.is_liked ? (
+                          <AiFillHeart
+                            onClick={() => handleUnlike(post.id)}
+                            size={30}
+                            style={{
+                              paddingRight: "12px",
+                              color: "red",
+                              cursor: "pointer",
+                            }}
+                          />
+                        ) : (
+                          <AiOutlineHeart
+                            onClick={() => handleLike(post.id)}
+                            size={30}
+                            style={{
+                              paddingRight: "12px",
+
+                              cursor: "pointer",
+                            }}
+                          />
+                        )}
+
+                        <BsChat
+                          size={28}
+                          style={{ paddingRight: "12px", cursor: "pointer" }}
+                          onClick={() => handleOpen(post.id)}
+                        />
+
+                        <FiSend size={28} style={{ cursor: "pointer" }} />
                       </Typography>
-                      <Typography>{post?.content}</Typography>
+                      <Typography sx={{ float: "right" }}>
+                        {post?.is_saved ? (
+                          <GoBookmarkFill
+                            onClick={() => handleUnsave(post?.id)}
+                            size={30}
+                            style={{ cursor: "pointer" }}
+                          />
+                        ) : (
+                          <GoBookmark
+                            onClick={() => handleSave(post?.id)}
+                            size={30}
+                            style={{ cursor: "pointer" }}
+                          />
+                        )}
+                      </Typography>
                     </div>
-                  ) : (
                     <div>
                       <span></span>
+                      <span></span>
                     </div>
-                  )}
+                    <div>
+                      {post?.like_count > 0 ? (
+                        <div>
+                          <Typography
+                            sx={{ fontStyle: "#000", fontWeight: "bold" }}
+                          >
+                            {post?.like_count} beğenme
+                          </Typography>
+                        </div>
+                      ) : (
+                        <div></div>
+                      )}
 
-                  <Typography>{post?.comments_count} yorumu gör</Typography>
+                      {post?.content !== "" ? (
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <Typography
+                            sx={{
+                              fontStyle: "#000",
+                              fontWeight: "bold",
+                              paddingRight: "5px",
+                            }}
+                          >
+                            {post?.user?.name}
+                          </Typography>
+                          <Typography>{post?.content}</Typography>
+                        </div>
+                      ) : (
+                        <div>
+                          <span></span>
+                        </div>
+                      )}
 
-                  <form
-                    style={{
-                      display: "flex",
-                    }}
-                    onSubmit={(e) => handleCommentSubmit(e, post.id)}
-                  >
-                    <input
-                      name="comment"
-                      placeholder="Yorum Gir..."
-                      style={{
-                        border: "none",
+                      <Typography>{post?.comments_count} yorumu gör</Typography>
 
-                        outline: "none",
-                        width: "400px",
-                      }}
-                      onChange={(e) => {
-                        if (e.target.value.trim() !== "") {
-                          // Giriş alanında yazı varsa "Paylaş" düğmesini göster
-                          document.getElementById(
-                            `submit-button${post?.id}`
-                          ).style.display = "block";
-                        } else {
-                          // Giriş alanı boşsa "Paylaş" düğmesini gizle
-                          document.getElementById(
-                            `submit-button${post?.id}`
-                          ).style.display = "none";
-                        }
-                      }}
-                    />
+                      <form
+                        style={{
+                          display: "flex",
+                        }}
+                        onSubmit={(e) => handleCommentSubmit(e, post.id)}
+                      >
+                        <input
+                          name="comment"
+                          placeholder="Yorum Gir..."
+                          style={{
+                            border: "none",
 
-                    <Button
-                      id={`submit-button${post?.id}`}
-                      style={{
-                        display: "none",
-                        padding: 0,
-                        margin: 0,
-                        paddingTop: "6 px",
-                      }}
-                      variant="contained"
-                      color="primary"
-                      type="submit"
-                      sx={buttonStyle}
-                    >
-                      Paylaş
-                    </Button>
-                  </form>
-                </div>
-              </Typography>
-            </CardContent>
+                            outline: "none",
+                            width: "400px",
+                          }}
+                          onChange={(e) => {
+                            if (e.target.value.trim() !== "") {
+                              // Giriş alanında yazı varsa "Paylaş" düğmesini göster
+                              document.getElementById(
+                                `submit-button${post?.id}`
+                              ).style.display = "block";
+                            } else {
+                              // Giriş alanı boşsa "Paylaş" düğmesini gizle
+                              document.getElementById(
+                                `submit-button${post?.id}`
+                              ).style.display = "none";
+                            }
+                          }}
+                        />
+
+                        <Button
+                          id={`submit-button${post?.id}`}
+                          style={{
+                            display: "none",
+                            padding: 0,
+                            margin: 0,
+                            paddingTop: "6 px",
+                          }}
+                          variant="contained"
+                          color="primary"
+                          type="submit"
+                          sx={buttonStyle}
+                        >
+                          Paylaş
+                        </Button>
+                      </form>
+                    </div>
+                  </Typography>
+                </CardContent>
+              </Grid>
+            </Grid>
           </Card>
         </Box>
       </StyledModal>
